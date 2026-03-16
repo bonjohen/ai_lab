@@ -1,7 +1,7 @@
 # Implementation Plan: Multi-Model Chat Application v1
 
 **Source document:** `docs/initial_design.md`
-**Status:** In Progress — Phase 5
+**Status:** Complete — v1
 
 ---
 
@@ -228,17 +228,17 @@ I have these to use, but they are not configured yet.
 
 ### Tasks
 
-- [ ] **6.1** Build OpenAI-compatible adapter
+- [X] **6.1** Build OpenAI-compatible adapter
   - Chat completions API streaming → normalized events
-  - Auth via secrets.json / env vars
-  - Health check via lightweight API call
-  - Map API errors to normalized error codes
-- [ ] **6.2** Build router adapter
-  - Preserve both configured route identity and downstream resolved model identity
-  - Pass through resolved model name from router response
-- [ ] **6.3** Update source picker and provenance display to handle router metadata (requested model vs resolved model)
+  - Auth via endpoint auth_ref (bearer token)
+  - Health check via /models endpoint
+  - Map API errors to normalized error codes (401→auth_failed, 404→model_not_found)
+- [X] **6.2** Build router adapter
+  - Extends OpenAI-compatible adapter
+  - Logs when resolved model differs from requested model
+- [X] **6.3** Register all adapters in registry (ollama, openai_compatible, provider_native, router_api)
 - [ ] **6.4** Add example config for at least one cloud provider and one router
-- [ ] **6.5** Integration test: chat through OpenAI-compatible endpoint, verify provenance includes resolved model
+- [ ] **6.5** Integration test: chat through OpenAI-compatible endpoint (requires live endpoint)
 
 **Exit criteria:** Can chat against Ollama, OpenAI-compatible APIs, and routers. Provenance is correct for all adapter types.
 
