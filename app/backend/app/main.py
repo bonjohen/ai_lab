@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config.loader import ConfigLoader, ConfigError
+from app.persistence.database import init_database
+from app.routes.conversations import router as conversations_router
 from app.routes.sources import router as sources_router
 
 logger = logging.getLogger(__name__)
@@ -15,7 +17,7 @@ CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Load configuration on startup."""
+    """Load configuration and initialize database on startup."""
     try:
         loader = ConfigLoader(CONFIG_DIR)
         config = loader.load()
@@ -29,7 +31,13 @@ async def lifespan(app: FastAPI):
     except ConfigError as exc:
         logger.error("Configuration failed to load:\n%s", exc)
         raise
+
+    db = await init_database(config.app.database_path)
+    app.state.db = db
+
     yield
+
+    await db.close()
 
 
 def create_app() -> FastAPI:
@@ -45,6 +53,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(sources_router, prefix="/api")
+    app.include_router(conversations_router, prefix="/api")
 
     return app
 

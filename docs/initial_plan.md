@@ -1,7 +1,7 @@
 # Implementation Plan: Multi-Model Chat Application v1
 
 **Source document:** `docs/initial_design.md`
-**Status:** In Progress — Phase 1
+**Status:** In Progress — Phase 2
 
 ---
 
@@ -78,24 +78,24 @@ I have these to use, but they are not configured yet.
 
 ### Tasks
 
-- [ ] **2.1** Define SQLite schema and migration system
+- [X] **2.1** Define SQLite schema and migration system
   - `conversations` — id, title, source_id, created_at, updated_at, archived
   - `messages` — id, conversation_id, role, content, created_at, execution_id (nullable)
   - `executions` — id, selected_source_id, resolved_endpoint_id, route_id, requested_model, resolved_model, adapter_type, request_options_json, token_usage_json, status, error_code, error_message, started_at, completed_at, correlation_id
   - `endpoint_health_snapshots` — id, endpoint_id, status, latency_ms, checked_at, details_json
   - `endpoint_inventory_snapshots` — id, endpoint_id, models_json, refreshed_at
-- [ ] **2.2** Build persistence module with repository pattern
+- [X] **2.2** Build persistence module with repository pattern
   - Conversation CRUD: create, list, get (with messages + execution summaries)
   - Message CRUD: append user/assistant messages
   - Execution CRUD: create, update on completion
-- [ ] **2.3** Expose backend API:
+- [X] **2.3** Expose backend API:
   - `POST /api/conversations` — create
   - `GET /api/conversations` — list
   - `GET /api/conversations/:id` — get with messages
   - `POST /api/conversations/:id/fork` — fork to new source
-- [ ] **2.4** Implement conversation fork logic (design doc §24)
+- [X] **2.4** Implement conversation fork logic (design doc §24)
   - Copy visible messages, retain original provenance on copied assistant messages, pin to new source
-- [ ] **2.5** Unit tests for persistence: CRUD operations, fork integrity, execution linkage
+- [X] **2.5** Unit tests for persistence: CRUD operations, fork integrity, execution linkage
 
 **Exit criteria:** Can create/list/get/fork conversations via API. Data survives backend restart.
 
