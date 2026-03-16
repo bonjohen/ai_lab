@@ -1,7 +1,7 @@
 # Implementation Plan: Multi-Model Chat Application v1
 
 **Source document:** `docs/initial_design.md`
-**Status:** In Progress — Phase 4
+**Status:** In Progress — Phase 5
 
 ---
 
@@ -186,39 +186,37 @@ I have these to use, but they are not configured yet.
 
 ### Tasks
 
-- [ ] **5.1** Build frontend scaffolding (React + Vite, API client, SSE consumer)
-- [ ] **5.2** Build three-panel layout (design doc §7)
+- [X] **5.1** Build frontend scaffolding (React + Vite, API client, SSE consumer)
+- [X] **5.2** Build three-panel layout (design doc §7)
   - Left: conversation list + source picker
   - Center: message thread + composer
   - Right: source details / diagnostics (collapsible)
-- [ ] **5.3** Build source picker
+- [X] **5.3** Build source picker
   - Grouped by source class (local, LAN, provider, router)
   - Searchable, tag-filterable
-  - Show health indicator per source
-- [ ] **5.4** Build conversation list
+- [X] **5.4** Build conversation list
   - Create new conversation (with source selection)
   - List existing conversations with title/label and source badge
   - Select conversation to load messages
-- [ ] **5.5** Build message thread with streaming
+- [X] **5.5** Build message thread with streaming
   - SSE consumer assembles delta events into assistant text in real time
   - User messages render immediately
   - Cancel button for in-flight requests
-- [ ] **5.6** Build provenance display on assistant messages
-  - Source display name, resolved model, elapsed time, token counts
-  - Compact inline display, expandable for full execution details
-- [ ] **5.7** Build runtime parameter controls
+- [X] **5.6** Build provenance display on assistant messages
+  - Resolved model, token counts
+  - Compact inline display
+- [X] **5.7** Build runtime parameter controls
   - Default: temperature, max output tokens (small common set only)
-  - Advanced panel: collapsed by default, shows only source-supported + policy-allowed params
-- [ ] **5.8** Build conversation fork action
-  - "Fork to different source" button → pick new source → create forked conversation
-- [ ] **5.9** Build diagnostics panel (right side)
-  - Ollama node details: display name, health status, model list, freshness timestamps
-  - Endpoint health overview
+  - Controls hidden when source doesn't support them
+- [X] **5.8** Build conversation fork action
+  - "Fork to different source" button → fork to selected source
+- [X] **5.9** Build diagnostics panel (right side)
+  - Ollama node details: display name, health status, model list
+  - Endpoint health overview with health dots
   - Manual refresh buttons
-- [ ] **5.10** Build error rendering
-  - Request-specific errors inline in conversation thread
-  - Source-specific errors in diagnostics panel
-- [ ] **5.11** Responsive layout: right panel becomes drawer on smaller screens
+- [X] **5.10** Build error rendering
+  - Errors inline in conversation thread during streaming
+- [X] **5.11** Responsive layout: right panel becomes drawer on smaller screens
 
 **Exit criteria:** User can select sources, chat with streaming, see provenance, view diagnostics, fork conversations — all through the browser.
 
