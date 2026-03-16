@@ -5,8 +5,10 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.adapters.registry import close_all as close_adapters
 from app.config.loader import ConfigLoader, ConfigError
 from app.persistence.database import init_database
+from app.routes.chat import router as chat_router
 from app.routes.conversations import router as conversations_router
 from app.routes.sources import router as sources_router
 
@@ -37,6 +39,7 @@ async def lifespan(app: FastAPI):
 
     yield
 
+    await close_adapters()
     await db.close()
 
 
@@ -54,6 +57,7 @@ def create_app() -> FastAPI:
 
     app.include_router(sources_router, prefix="/api")
     app.include_router(conversations_router, prefix="/api")
+    app.include_router(chat_router, prefix="/api")
 
     return app
 

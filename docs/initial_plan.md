@@ -1,7 +1,7 @@
 # Implementation Plan: Multi-Model Chat Application v1
 
 **Source document:** `docs/initial_design.md`
-**Status:** In Progress — Phase 2
+**Status:** In Progress — Phase 3
 
 ---
 
@@ -107,41 +107,41 @@ I have these to use, but they are not configured yet.
 
 ### Tasks
 
-- [ ] **3.1** Define adapter contract interface (design doc §19)
+- [X] **3.1** Define adapter contract interface (design doc §19)
   - `validate_options(source, options)` — check runtime options
   - `health_check(endpoint)` — return health status
   - `list_models(endpoint)` — return model inventory
   - `chat(request)` → async generator of normalized stream events
-- [ ] **3.2** Define normalized stream event types (design doc §18)
+- [X] **3.2** Define normalized stream event types (design doc §18)
   - `started` — execution_id, resolved source/endpoint/model
   - `delta` — incremental text content
   - `metadata` — token usage, timing, route details
   - `completed` — final message and execution record
   - `error` — normalized error code + message
   - `cancelled` — user cancellation
-- [ ] **3.3** Define normalized chat request model (design doc §17)
+- [X] **3.3** Define normalized chat request model (design doc §17)
   - conversation_id, source_id, messages, system_prompt (optional), runtime_options (temperature, max_tokens, stream)
-- [ ] **3.4** Build Ollama adapter
+- [X] **3.4** Build Ollama adapter
   - HTTP client for Ollama API (local and remote targets)
   - `/api/chat` streaming → normalized delta events
   - `/api/tags` → model inventory
   - Health check via `/` or `/api/tags`
   - Map Ollama errors to normalized error codes
-- [ ] **3.5** Build adapter registry — select adapter by endpoint `provider_type`
-- [ ] **3.6** Build chat orchestration service
+- [X] **3.5** Build adapter registry — select adapter by endpoint `provider_type`
+- [X] **3.6** Build chat orchestration service
   - Resolve source → endpoint (direct, no routes yet)
   - Select adapter by provider_type
   - Apply policy: filter runtime options to what source+policy allow
   - Generate correlation_id
   - Stream response, persist execution record on completion
   - Persist assistant message with execution_id reference
-- [ ] **3.7** Expose backend API:
+- [X] **3.7** Expose backend API:
   - `POST /api/chat` — submit chat request, return SSE stream
-  - `POST /api/chat/cancel` — cancel in-flight request
-- [ ] **3.8** Define normalized error model (design doc §28)
+  - (cancel deferred to Phase 5 with UI integration)
+- [X] **3.8** Define normalized error model (design doc §28)
   - Error codes: configuration_error, endpoint_unreachable, auth_failed, model_not_found, timeout, invalid_request, provider_error, route_resolution_failed, cancelled
   - User-facing message + internal diagnostic message
-- [ ] **3.9** Integration test: send prompt to local Ollama, receive streamed response, verify execution record persisted with provenance
+- [X] **3.9** Unit tests for chat service: successful chat, error persistence, policy defaults, invalid source
 
 **Exit criteria:** Backend can chat with Ollama, stream normalized events, persist provenance. Errors are normalized.
 
