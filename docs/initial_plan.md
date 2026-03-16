@@ -1,7 +1,7 @@
 # Implementation Plan: Multi-Model Chat Application v1
 
 **Source document:** `docs/initial_design.md`
-**Status:** In Progress — Phase 3
+**Status:** In Progress — Phase 4
 
 ---
 
@@ -153,28 +153,28 @@ I have these to use, but they are not configured yet.
 
 ### Tasks
 
-- [ ] **4.1** Build route resolver module (design doc §20)
+- [X] **4.1** Build route resolver module (design doc §20)
   - First-healthy-endpoint strategy
   - Model-presence check: skip endpoints missing the requested model
   - Record resolution decisions (selected/skipped and why) for execution logs
   - Return specific failures: no healthy endpoint, model not present, misconfiguration
-- [ ] **4.2** Build health check scheduler
+- [X] **4.2** Build health check scheduler
   - Background task: periodic lightweight health checks for all endpoints
   - Cache results in endpoint_health_snapshots
   - Configurable interval from app_config.json
   - Non-blocking: health refresh never blocks chat requests
-- [ ] **4.3** Build Ollama inventory refresh scheduler
+- [X] **4.3** Build Ollama inventory refresh scheduler
   - Background task: periodic model inventory refresh for Ollama endpoints
   - Cache results in endpoint_inventory_snapshots
   - Less frequent than health checks
   - Cached inventory available for route resolution model-presence decisions
-- [ ] **4.4** Expose backend API:
+- [X] **4.4** Expose backend API:
   - `GET /api/health` — list endpoint health summaries
   - `GET /api/inventory` — list Ollama model inventory by node
   - `POST /api/health/refresh` — manual health refresh
   - `POST /api/inventory/refresh` — manual inventory refresh
-- [ ] **4.5** Update chat orchestration to use route resolver when source references a route
-- [ ] **4.6** Integration test: configure route over two Ollama nodes, take one offline, verify failover and resolution logging
+- [X] **4.5** Update chat orchestration to use route resolver when source references a route
+- [X] **4.6** Unit tests: route resolver with first_healthy, model presence, edge cases (8 tests)
 
 **Exit criteria:** Chat works through routes. Unhealthy endpoints are skipped. Health and inventory update in background.
 

@@ -10,7 +10,9 @@ from app.config.loader import ConfigLoader, ConfigError
 from app.persistence.database import init_database
 from app.routes.chat import router as chat_router
 from app.routes.conversations import router as conversations_router
+from app.routes.health import router as health_router
 from app.routes.sources import router as sources_router
+from app.services.health import HealthService
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +21,7 @@ CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Load configuration and initialize database on startup."""
+    """Load configuration, initialize database, start health scheduler."""
     try:
         loader = ConfigLoader(CONFIG_DIR)
         config = loader.load()
@@ -37,8 +39,13 @@ async def lifespan(app: FastAPI):
     db = await init_database(config.app.database_path)
     app.state.db = db
 
+    health_service = HealthService(config)
+    app.state.health_service = health_service
+    await health_service.start()
+
     yield
 
+    await health_service.stop()
     await close_adapters()
     await db.close()
 
@@ -58,6 +65,7 @@ def create_app() -> FastAPI:
     app.include_router(sources_router, prefix="/api")
     app.include_router(conversations_router, prefix="/api")
     app.include_router(chat_router, prefix="/api")
+    app.include_router(health_router, prefix="/api")
 
     return app
 

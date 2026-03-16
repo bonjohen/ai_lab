@@ -12,6 +12,7 @@ from typing import AsyncIterator
 
 import aiosqlite
 
+from app.adapters.base import HealthResult
 from app.adapters.registry import get_adapter
 from app.models.chat import (
     ChatRequest,
@@ -21,16 +22,25 @@ from app.models.chat import (
 )
 from app.models.config import RuntimeConfig
 from app.persistence.repositories import ExecutionRepository, MessageRepository
+from app.services.route_resolver import RouteResolver
 
 logger = logging.getLogger(__name__)
 
 
 class ChatService:
-    def __init__(self, config: RuntimeConfig, db: aiosqlite.Connection):
+    def __init__(
+        self,
+        config: RuntimeConfig,
+        db: aiosqlite.Connection,
+        health_cache: dict[str, HealthResult] | None = None,
+        inventory_cache: dict[str, list[str]] | None = None,
+    ):
         self.config = config
         self.db = db
         self.msg_repo = MessageRepository(db)
         self.exec_repo = ExecutionRepository(db)
+        self.health_cache = health_cache or {}
+        self.inventory_cache = inventory_cache or {}
 
     async def handle_chat(self, request: ChatRequest) -> AsyncIterator[StreamEvent]:
         correlation_id = str(uuid.uuid4())
@@ -45,20 +55,52 @@ class ChatService:
             )
             return
 
-        # Resolve endpoint (direct only for Phase 3 — route resolution in Phase 4)
+        # Resolve endpoint — direct or via route
         endpoint = None
         route_id = None
         if source.endpoint_id:
             endpoint = self.config.endpoints.get(source.endpoint_id)
         elif source.route_id:
-            # Placeholder for Phase 4 route resolution
             route_id = source.route_id
-            yield StreamEvent(
-                type=StreamEventType.error,
-                error_code=ErrorCode.route_resolution_failed,
-                error_message="Route resolution not yet implemented",
+            route = self.config.routes.get(source.route_id)
+            if route is None:
+                yield StreamEvent(
+                    type=StreamEventType.error,
+                    error_code=ErrorCode.route_resolution_failed,
+                    error_message=f"Route '{source.route_id}' not found in config",
+                )
+                return
+
+            resolver = RouteResolver(self.health_cache, self.inventory_cache)
+            # Get adapter for potential live health checks
+            try:
+                probe_adapter = get_adapter(
+                    self.config.endpoints[route.endpoint_ids[0]].provider_type
+                ) if route.endpoint_ids else None
+            except (KeyError, ValueError):
+                probe_adapter = None
+
+            result = await resolver.resolve(route, self.config.endpoints, probe_adapter)
+            if result.endpoint is None:
+                decisions_log = "; ".join(
+                    f"{d.endpoint_id}: {d.reason}" for d in result.decisions
+                )
+                logger.warning(
+                    "[%s] Route resolution failed: %s [%s]",
+                    correlation_id, result.error, decisions_log,
+                )
+                yield StreamEvent(
+                    type=StreamEventType.error,
+                    error_code=ErrorCode.route_resolution_failed,
+                    error_message=result.error or "Route resolution failed",
+                )
+                return
+
+            endpoint = result.endpoint
+            logger.info(
+                "[%s] Route '%s' resolved to endpoint '%s'",
+                correlation_id, route.id, endpoint.id,
             )
-            return
 
         if endpoint is None:
             yield StreamEvent(

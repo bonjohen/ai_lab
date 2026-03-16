@@ -16,7 +16,13 @@ router = APIRouter(tags=["chat"])
 
 @router.post("/chat")
 async def chat(body: ChatRequest, request: Request):
-    service = ChatService(request.app.state.config, request.app.state.db)
+    health_service = getattr(request.app.state, "health_service", None)
+    service = ChatService(
+        request.app.state.config,
+        request.app.state.db,
+        health_cache=health_service.health_cache if health_service else None,
+        inventory_cache=health_service.inventory_cache if health_service else None,
+    )
 
     async def event_generator():
         async for event in service.handle_chat(body):
