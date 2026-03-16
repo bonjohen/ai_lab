@@ -1,0 +1,17 @@
+[
+    {
+        "id": "home-ollama-route",
+        "display_name": "Home Network Ollama",
+        "endpoint_ids": ["local-ollama", "dgx-spark-ollama", "mac-mini-ollama", "macbook-ollama"],
+        "strategy": "first_healthy",
+        "fallback_message": "No healthy Ollama node available on the home network"
+    },
+    {
+        "id": "high-memory-route",
+        "display_name": "High-Memory Nodes",
+        "endpoint_ids": ["dgx-spark-ollama", "macbook-ollama"],
+        "strategy": "first_healthy_with_model",
+        "required_model": null,
+        "fallback_message": "No high-memory node available"
+    }
+]

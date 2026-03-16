@@ -1,0 +1,6 @@
+{
+    "health_check_interval_seconds": 30,
+    "inventory_refresh_interval_seconds": 120,
+    "database_path": "data/ai_lab.db",
+    "log_level": "INFO"
+}

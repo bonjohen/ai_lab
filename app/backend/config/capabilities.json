@@ -1,0 +1,24 @@
+[
+    {
+        "id": "ollama-chat",
+        "supports_streaming": true,
+        "supports_system_prompt": true,
+        "supports_temperature": true,
+        "supports_top_p": true,
+        "supports_max_tokens": true,
+        "supports_structured_output": false,
+        "supports_tool_calling": false,
+        "supports_vision": false
+    },
+    {
+        "id": "openai-chat",
+        "supports_streaming": true,
+        "supports_system_prompt": true,
+        "supports_temperature": true,
+        "supports_top_p": true,
+        "supports_max_tokens": true,
+        "supports_structured_output": true,
+        "supports_tool_calling": false,
+        "supports_vision": false
+    }
+]

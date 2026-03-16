@@ -1,0 +1,44 @@
+[
+    {
+        "id": "local-llama3",
+        "display_name": "Llama 3 (Local)",
+        "source_class": "local",
+        "endpoint_id": "local-ollama",
+        "capability_profile_id": "ollama-chat",
+        "default_model": "llama3-8k:latest",
+        "tags": ["local", "fast", "preferred"],
+        "visible": true,
+        "policy_id": "default"
+    },
+    {
+        "id": "local-deepseek",
+        "display_name": "DeepSeek R1 1.5B (Local)",
+        "source_class": "local",
+        "endpoint_id": "local-ollama",
+        "capability_profile_id": "ollama-chat",
+        "default_model": "deepseek-r1:1.5b-tier2-light",
+        "tags": ["local", "reasoning", "fast"],
+        "visible": true,
+        "policy_id": "default"
+    },
+    {
+        "id": "home-network-auto",
+        "display_name": "Home Network (Auto)",
+        "source_class": "lan",
+        "route_id": "home-ollama-route",
+        "capability_profile_id": "ollama-chat",
+        "tags": ["lan", "auto-failover"],
+        "visible": true,
+        "policy_id": "default"
+    },
+    {
+        "id": "dgx-spark",
+        "display_name": "DGX Spark",
+        "source_class": "lan",
+        "endpoint_id": "dgx-spark-ollama",
+        "capability_profile_id": "ollama-chat",
+        "tags": ["lan", "high-memory"],
+        "visible": true,
+        "policy_id": "default"
+    }
+]

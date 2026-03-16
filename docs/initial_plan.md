@@ -1,7 +1,7 @@
 # Implementation Plan: Multi-Model Chat Application v1
 
 **Source document:** `docs/initial_design.md`
-**Status:** Draft — awaiting review
+**Status:** In Progress — Phase 1
 
 ---
 
@@ -48,25 +48,25 @@ I have these to use, but they are not configured yet.
 
 ### Tasks
 
-- [ ] **1.1** Initialize project structure (package.json / pyproject.toml, Vite config, FastAPI app skeleton)
-- [ ] **1.2** Define JSON schemas for all six config files:
+- [X] **1.1** Initialize project structure (package.json / pyproject.toml, Vite config, FastAPI app skeleton)
+- [X] **1.2** Define JSON schemas for all six config files:
   - `app_config.json` — refresh intervals, feature flags, persistence settings
   - `capabilities.json` — reusable capability profiles (streaming, temperature, max_tokens, etc.)
   - `endpoints.json` — concrete connection targets with provider_type, transport, auth ref, health-check config
   - `routes.json` — logical resolvers: candidate endpoint list, selection strategy, fallback policy
   - `sources.json` — UI-selectable targets referencing endpoint_id or route_id, capability profile, tags
   - `policies.json` — runtime limits, allowed overrides, timeouts, retry rules
-- [ ] **1.3** Build configuration loader module
+- [X] **1.3** Build configuration loader module
   - Read all JSON files from config directory
   - Validate cross-references (design doc §15): no duplicate IDs, source→endpoint/route integrity, capability profile existence, policy resolution
   - Emit actionable errors with filename, object ID, and field name
   - Produce one coherent in-memory configuration model
-- [ ] **1.4** Build UI-safe source list view model (design doc §26)
+- [X] **1.4** Build UI-safe source list view model (design doc §26)
   - Transform internal config into display-safe metadata: id, display_name, source_class, tags, capability_summary, default_model_label, health_summary
   - Strip auth data, private network details, policy internals
-- [ ] **1.5** Expose backend API: `GET /api/sources` (list) and `GET /api/sources/:id` (detail)
-- [ ] **1.6** Write example config files for a realistic setup (local Ollama, LAN Ollama, one OpenAI-compatible placeholder)
-- [ ] **1.7** Unit tests for config loader: valid config, missing references, duplicate IDs, malformed entries
+- [X] **1.5** Expose backend API: `GET /api/sources` (list) and `GET /api/sources/:id` (detail)
+- [X] **1.6** Write example config files for a realistic setup (local Ollama, LAN Ollama, one OpenAI-compatible placeholder)
+- [X] **1.7** Unit tests for config loader: valid config, missing references, duplicate IDs, malformed entries
 
 **Exit criteria:** Backend starts, loads config, returns source list via API. Invalid config produces clear errors.
 

@@ -1,0 +1,71 @@
+[
+    {
+        "id": "local-ollama",
+        "display_name": "Local Ollama (RTX 4070)",
+        "provider_type": "ollama",
+        "base_url": "http://localhost:11434",
+        "default_model": "llama3-8k:latest",
+        "is_ollama_node": true,
+        "health_check": {
+            "enabled": true,
+            "timeout_seconds": 5.0,
+            "path": "/"
+        },
+        "tags": ["local", "gpu"],
+        "metadata": {
+            "gpu": "RTX 4070",
+            "note": "Primary local development node"
+        }
+    },
+    {
+        "id": "dgx-spark-ollama",
+        "display_name": "DGX Spark (128G)",
+        "provider_type": "ollama",
+        "base_url": "http://dgx-spark:11434",
+        "is_ollama_node": true,
+        "health_check": {
+            "enabled": true,
+            "timeout_seconds": 5.0,
+            "path": "/"
+        },
+        "tags": ["lan", "gpu", "high-memory"],
+        "metadata": {
+            "device": "NVIDIA DGX Spark",
+            "memory": "128G"
+        }
+    },
+    {
+        "id": "mac-mini-ollama",
+        "display_name": "Mac Mini M4 (24G)",
+        "provider_type": "ollama",
+        "base_url": "http://mac-mini:11434",
+        "is_ollama_node": true,
+        "health_check": {
+            "enabled": true,
+            "timeout_seconds": 5.0,
+            "path": "/"
+        },
+        "tags": ["lan", "apple-silicon"],
+        "metadata": {
+            "device": "Mac Mini M4",
+            "memory": "24G"
+        }
+    },
+    {
+        "id": "macbook-ollama",
+        "display_name": "MacBook M4 (64G)",
+        "provider_type": "ollama",
+        "base_url": "http://macbook:11434",
+        "is_ollama_node": true,
+        "health_check": {
+            "enabled": true,
+            "timeout_seconds": 5.0,
+            "path": "/"
+        },
+        "tags": ["lan", "apple-silicon", "high-memory"],
+        "metadata": {
+            "device": "MacBook M4",
+            "memory": "64G"
+        }
+    }
+]
