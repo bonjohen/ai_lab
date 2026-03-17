@@ -45,7 +45,12 @@ export default function App() {
     const full = await fetchConversation(conv.id);
     setActiveConv(full);
     setMessages(full.messages || []);
-  }, []);
+    // Auto-select the source this conversation belongs to
+    const matchingSource = sources.find((s) => s.id === full.source_id);
+    if (matchingSource) {
+      setSelectedSource(matchingSource);
+    }
+  }, [sources]);
 
   const handleNewChat = useCallback(async () => {
     if (!selectedSource) return;
@@ -56,12 +61,20 @@ export default function App() {
   }, [selectedSource]);
 
   const handleSend = useCallback(
-    (text: string) => {
-      if (!activeConv || !selectedSource) return;
+    async (text: string) => {
+      if (!selectedSource) return;
+
+      // Auto-create conversation if none active
+      let conv = activeConv;
+      if (!conv) {
+        conv = await createConversation(selectedSource.id);
+        setActiveConv(conv);
+        setConversations((prev) => [conv!, ...prev]);
+      }
 
       const userMsg: Message = {
         id: crypto.randomUUID(),
-        conversation_id: activeConv.id,
+        conversation_id: conv.id,
         role: "user",
         content: text,
         created_at: new Date().toISOString(),
@@ -78,7 +91,7 @@ export default function App() {
       }));
 
       const controller = streamChat(
-        activeConv.id,
+        conv.id,
         selectedSource.id,
         chatMessages,
         { temperature, max_tokens: maxTokens },
@@ -95,7 +108,7 @@ export default function App() {
         () => {
           setIsStreaming(false);
           setStreamingContent("");
-          loadConversation(activeConv);
+          loadConversation(conv);
         },
         (err: string) => {
           setIsStreaming(false);
@@ -178,7 +191,7 @@ export default function App() {
           onSend={handleSend}
           onCancel={handleCancel}
           isStreaming={isStreaming}
-          disabled={!activeConv || !selectedSource}
+          disabled={!selectedSource}
           sourceName={selectedSource?.display_name || null}
         />
       </div>

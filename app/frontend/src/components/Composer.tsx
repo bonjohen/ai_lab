@@ -39,7 +39,7 @@ export default function Composer({
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={disabled ? "Select a source to start..." : "Type a message..."}
+          placeholder={disabled ? "Select a source from the left panel..." : "Type a message and press Enter..."}
           disabled={disabled}
           rows={3}
         />
