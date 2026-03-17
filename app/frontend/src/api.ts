@@ -102,6 +102,18 @@ export async function fetchConversation(id: string): Promise<Conversation> {
   return resp.json();
 }
 
+export async function updateConversation(
+  id: string,
+  updates: { source_id?: string; title?: string }
+): Promise<Conversation> {
+  const resp = await fetch(`${API_BASE}/conversations/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updates),
+  });
+  return resp.json();
+}
+
 export async function createConversation(
   sourceId: string,
   title?: string

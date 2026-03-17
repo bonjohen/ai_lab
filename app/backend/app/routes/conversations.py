@@ -16,6 +16,11 @@ class CreateConversationRequest(BaseModel):
     title: str | None = None
 
 
+class UpdateConversationRequest(BaseModel):
+    source_id: str | None = None
+    title: str | None = None
+
+
 class ForkConversationRequest(BaseModel):
     new_source_id: str
 
@@ -43,6 +48,27 @@ async def get_conversation(conversation_id: str, request: Request):
     if conv is None:
         raise HTTPException(status_code=404, detail="Conversation not found")
     return conv
+
+
+@router.patch("/conversations/{conversation_id}")
+async def update_conversation(
+    conversation_id: str, body: UpdateConversationRequest, request: Request
+):
+    repo = ConversationRepository(request.app.state.db)
+    conv = await repo.get(conversation_id)
+    if conv is None:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+
+    if body.source_id is not None:
+        config = request.app.state.config
+        if body.source_id not in config.sources:
+            raise HTTPException(status_code=400, detail=f"Source '{body.source_id}' not found")
+        await repo.update_source(conversation_id, body.source_id)
+
+    if body.title is not None:
+        await repo.update_title(conversation_id, body.title)
+
+    return await repo.get(conversation_id)
 
 
 @router.post("/conversations/{conversation_id}/fork")

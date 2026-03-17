@@ -13,6 +13,7 @@ import {
   fetchSources,
   forkConversation,
   streamChat,
+  updateConversation,
 } from "./api";
 import Composer from "./components/Composer";
 import ConversationList from "./components/ConversationList";
@@ -51,6 +52,18 @@ export default function App() {
       setSelectedSource(matchingSource);
     }
   }, [sources]);
+
+  const handleSelectSource = useCallback(
+    async (source: SourceListItem) => {
+      setSelectedSource(source);
+      // Update active conversation's source to keep context with new backend
+      if (activeConv && activeConv.source_id !== source.id) {
+        await updateConversation(activeConv.id, { source_id: source.id });
+        setActiveConv((prev) => prev ? { ...prev, source_id: source.id } : prev);
+      }
+    },
+    [activeConv]
+  );
 
   const handleNewChat = useCallback(async () => {
     if (!selectedSource) return;
@@ -140,7 +153,7 @@ export default function App() {
         <SourcePicker
           sources={sources}
           selectedId={selectedSource?.id || null}
-          onSelect={setSelectedSource}
+          onSelect={handleSelectSource}
         />
         <h2>Conversations</h2>
         <ConversationList

@@ -84,6 +84,13 @@ class ConversationRepository:
         )
         await self.db.commit()
 
+    async def update_source(self, conversation_id: str, source_id: str) -> None:
+        await self.db.execute(
+            "UPDATE conversations SET source_id = ?, updated_at = ? WHERE id = ?",
+            (source_id, _now(), conversation_id),
+        )
+        await self.db.commit()
+
     async def fork(self, conversation_id: str, new_source_id: str) -> dict | None:
         """Fork a conversation to a new source (design doc §24).
 
